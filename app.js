@@ -1,7 +1,12 @@
 let express = require('express');
 let knex = require('knex');
+const bodyParser = require('body-parser');
+const sequelize = require('sequelize');
+const Track = require('./models/track');
 
 let app = express();
+
+app.use(bodyParser.json());
 
 app.get('/api/genres', function(request, response) {
 
@@ -66,6 +71,46 @@ app.get('/api/artists', function(request, response) {
 			response.json(artists);
 		});
 	}
+});
+
+app.get('/api/tracks/:id', function(request, response) {
+	let { id } = request.params; // This syntax is called "destructuring"
+
+	Track.findByPk(id).then((track) => {
+		if (track) {
+			response.json(track);
+		} else {
+			response.status(404).send();
+		}
+	});
+});
+
+app.patch('/api/tracks/:id', function(request, response) {
+	let { id } = request.params;
+
+	Track.findByPk(id).then((track) => {
+		if (track) {
+			track.update({
+				name: request.body.name,
+				milliseconds: request.body.milliseconds,
+				unitPrice: request.body.unitPrice
+			})
+			.then((track) => {
+				response.json(track);
+			}, (validation) => {
+				response.status(422).json({
+					errors: validation.errors.map((error) => {
+						return {
+							attribute: error.path,
+							message: error.message
+						};
+					})
+				});
+			});
+		} else {
+			response.status(404).send();
+		}
+	})
 });
 
 app.listen(process.env.PORT || 8000);
