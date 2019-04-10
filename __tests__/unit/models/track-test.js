@@ -7,8 +7,8 @@ describe('track', () => {
 			try {
 				let track = new Track({
 					name: 'test',
-					milliseconds: '1',
-					unitPrice: '1'
+					milliseconds: 1,
+					unitPrice: 1
 				});
 				await track.validate();
 			} catch (error) {
@@ -16,13 +16,13 @@ describe('track', () => {
 			}
 		});
 
-		// it('should pass validation when numeric', () => {
-		// 	let track = new Track({
-		// 		name: 'test',
-		// 		milliseconds: 1,
-		// 		unitPrice: 1
-		// 	});
-		// 	expect(track.validate()).to.be.true();
-		// });
+		it('should pass validation when numeric', async () => {
+			let track = new Track({
+				name: 'test',
+				milliseconds: 1,
+				unitPrice: 1
+			});
+			await track.validate();
+		});
 	});
 });
